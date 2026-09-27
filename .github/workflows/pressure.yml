@@ -1,0 +1,33 @@
+name: loadtest
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: '目标网址（默认你的站）'
+        required: false
+        default: 'https://hualuopd.com/'
+      concurrency:
+        description: '并发数（默认1000，越大越猛）'
+        required: false
+        default: '1000'
+      duration:
+        description: '时长（秒，默认60）'
+        required: false
+        default: '60'
+      processes:
+        description: '进程数（默认2）'
+        required: false
+        default: '2'
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: 装依赖
+        run: pip install aiohttp brotli requests tqdm
+      - name: 下载压测脚本
+        run: wget -O 1.py "https://aka.doubaocdn.com/s/ELQsX38YPS"
+      - name: 开跑
+        run: python3 1.py --url "${{ github.event.inputs.url }}" -a -p "${{ github.event.inputs.processes }}" -c "${{ github.event.inputs.concurrency }}" --duration "${{ github.event.inputs.duration }}" -y
