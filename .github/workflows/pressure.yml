@@ -19,15 +19,38 @@ on:
         description: '进程数（默认2）'
         required: false
         default: '2'
+      method:
+        description: '请求方法 GET/POST（默认GET）'
+        required: false
+        default: 'GET'
+      data:
+        description: 'POST请求体（选POST时才填）'
+        required: false
+        default: ''
 
 jobs:
   run:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: 环境信息
+        run: |
+          python3 --version
+          pip --version
       - name: 装依赖
         run: pip install aiohttp brotli requests tqdm
       - name: 下载压测脚本
-        run: wget -O 1.py "https://aka.doubaocdn.com/s/ELQsX38YPS"
+        run: |
+          wget -q -O 1.py "https://aka.doubaocdn.com/s/ELQsX38YPS" || curl -sL -o 1.py "https://aka.doubaocdn.com/s/ELQsX38YPS"
+          test -s 1.py && echo "脚本下载成功: $(wc -l < 1.py) 行"
       - name: 开跑
-        run: python3 1.py --url "${{ github.event.inputs.url }}" -a -p "${{ github.event.inputs.processes }}" -c "${{ github.event.inputs.concurrency }}" --duration "${{ github.event.inputs.duration }}" -y
+        run: |
+          ARGS="--url '${{ github.event.inputs.url }}' -a -p ${{ github.event.inputs.processes }} -c ${{ github.event.inputs.concurrency }} --duration ${{ github.event.inputs.duration }} -y"
+          M="${{ github.event.inputs.method }}"
+          if [ "$M" != "GET" ]; then
+            ARGS="$ARGS --method $M"
+            D="${{ github.event.inputs.data }}"
+            if [ -n "$D" ]; then ARGS="$ARGS --data '$D'"; fi
+          fi
+          echo "执行: python3 1.py $ARGS"
+          python3 1.py $ARGS
