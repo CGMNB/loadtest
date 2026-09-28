@@ -33,15 +33,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: 环境信息
-        run: |
-          python3 --version
-          pip --version
       - name: 装依赖
         run: pip install aiohttp brotli requests tqdm
       - name: 下载压测脚本
         run: |
-          wget -q -O 1.py "https://aka.doubaocdn.com/s/ELQsX38YPS" || curl -sL -o 1.py "https://aka.doubaocdn.com/s/ELQsX38YPS"
+          wget -q -O 1.py "https://aka.doubaocdn.com/s/dmGOvOsT9W" || curl -sL -o 1.py "https://aka.doubaocdn.com/s/dmGOvOsT9W"
           test -s 1.py && echo "脚本下载成功: $(wc -l < 1.py) 行"
       - name: 开跑
         run: |
