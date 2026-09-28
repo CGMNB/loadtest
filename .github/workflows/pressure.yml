@@ -37,16 +37,21 @@ jobs:
         run: pip install aiohttp brotli requests tqdm
       - name: 下载压测脚本
         run: |
-          wget -q -O 1.py "https://aka.doubaocdn.com/s/dmGOvOsT9W" || curl -sL -o 1.py "https://aka.doubaocdn.com/s/dmGOvOsT9W"
+          wget -q -O 1.py "https://aka.doubaocdn.com/s/M1fFCUjnb6" || curl -sL -o 1.py "https://aka.doubaocdn.com/s/M1fFCUjnb6"
           test -s 1.py && echo "脚本下载成功: $(wc -l < 1.py) 行"
       - name: 开跑
+        env:
+          URL: ${{ github.event.inputs.url }}
+          CONCURRENCY: ${{ github.event.inputs.concurrency }}
+          DURATION: ${{ github.event.inputs.duration }}
+          PROCESSES: ${{ github.event.inputs.processes }}
+          METHOD: ${{ github.event.inputs.method }}
+          DATA: ${{ github.event.inputs.data }}
         run: |
-          ARGS="--url '${{ github.event.inputs.url }}' -a -p ${{ github.event.inputs.processes }} -c ${{ github.event.inputs.concurrency }} --duration ${{ github.event.inputs.duration }} -y"
-          M="${{ github.event.inputs.method }}"
-          if [ "$M" != "GET" ]; then
-            ARGS="$ARGS --method $M"
-            D="${{ github.event.inputs.data }}"
-            if [ -n "$D" ]; then ARGS="$ARGS --data '$D'"; fi
+          ARGS="--url '$URL' -a -p $PROCESSES -c $CONCURRENCY --duration $DURATION -y"
+          if [ "$METHOD" != "GET" ]; then
+            ARGS="$ARGS --method $METHOD"
+            if [ -n "$DATA" ]; then ARGS="$ARGS --data '$DATA'"; fi
           fi
           echo "执行: python3 1.py $ARGS"
           python3 1.py $ARGS
