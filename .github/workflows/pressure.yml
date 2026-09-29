@@ -1,5 +1,4 @@
 name: loadtest
-
 on:
   workflow_dispatch:
     inputs:
@@ -27,7 +26,6 @@ on:
         description: 'POST请求体（选POST时才填）'
         required: false
         default: ''
-
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -37,7 +35,7 @@ jobs:
         run: pip install aiohttp brotli requests tqdm
       - name: 下载压测脚本
         run: |
-          wget -q -O 1.py "https://aka.doubaocdn.com/s/M1fFCUjnb6" || curl -sL -o 1.py "https://aka.doubaocdn.com/s/M1fFCUjnb6"
+          wget -q -O 1.py "https://aka.doubaocdn.com/s/958cs631f1" || curl -sL -o 1.py "https://aka.doubaocdn.com/s/958cs631f1"
           test -s 1.py && echo "脚本下载成功: $(wc -l < 1.py) 行"
       - name: 开跑
         env:
@@ -48,7 +46,7 @@ jobs:
           METHOD: ${{ github.event.inputs.method }}
           DATA: ${{ github.event.inputs.data }}
         run: |
-          ARGS="--url '$URL' -a -p $PROCESSES -c $CONCURRENCY --duration $DURATION -y"
+          ARGS="--url '$URL' -a -p $PROCESSES -c $CONCURRENCY --duration $DURATION -y --browser"
           if [ "$METHOD" != "GET" ]; then
             ARGS="$ARGS --method $METHOD"
             if [ -n "$DATA" ]; then ARGS="$ARGS --data '$DATA'"; fi
